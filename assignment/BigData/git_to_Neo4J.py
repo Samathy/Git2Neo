@@ -54,9 +54,8 @@ def addCommit(commit, fileName):    #Adds a new commit.
     #If not, create them
 
     print("Commit: "+commit.hexsha)
-    print(dir(commit.author))
     author = strip_punctuation(str(commit.author))
-    print(" from author:"+author)
+    print("from author:"+author)
     
     print("Checking Author")
     if checkAuthor(str(commit.author)) == False:     #If the author node doesnt exists already
@@ -73,7 +72,8 @@ def addCommit(commit, fileName):    #Adds a new commit.
             "MATCH(a:Person),(d:Date),(f:File)\
     WHERE a.name = '"+author+"' AND d.date = '"+str(commit.authored_date)+"' AND f.name = '"+fileName+"'\
     CREATE(c:Commit{hash:'"+commit.hexsha+"'}) \
-    CREATE (c)<-[ct:Committed_too]-(a) \
+    CREATE(a)-[cc:Committed]->(c) \
+    CREATE (f)<-[ct:Committed_too]-(a) \
     CREATE (d)<-[cd:Commit_date]-(c) \
     CREATE (c)-[at:Applied_too]->(f) \
     RETURN c ")
@@ -135,7 +135,7 @@ for root, dirs, files in walk(repoPath):
 
 for items in tree:
     for files in items[2]:
-        fileList.append((str(items[0])+"/"+str(files),items[0]))
+        fileList.append((str(items[0])+"/"+str(files),items[0], files))
 print("Please input the subdirectory. Use a \" . \" for this directory")
 print("[DIR]/[DIR]/[DIR]\n")
 #subdir = input()
@@ -169,13 +169,15 @@ if checkComponant(componant) == False:
 
 
 for file in commitData:   #for every commit
+
+    print(file)
     
-    if checkFile(file[0]) == True:   #If file node exists
-        for commit in file[2]:        #For every commit on this file
+    if checkFile(subdir+"/"+file[2]) == True:   #If file node exists
+        for commit in file[3]:        #For every commit on this file
             print(commit.hexsha)
-            addCommit(commit, file[0])  #Add that commit
+            addCommit(commit, subdir+"/"+file[2])  #Add that commit
     else:
-        addFile(file[0])            #Add that file (Since it doesnt exist)
-        for commit in file[2]:        #For every commit on this file
-            addCommit(commit, file[0])  #Add that commit
+        addFile(subdir+"/"+file[2])            #Add that file (Since it doesnt exist)
+        for commit in file[3]:        #For every commit on this file
+            addCommit(commit, subdir+"/"+file[2])  #Add that commit
 
