@@ -78,11 +78,6 @@ def addCommit(commit, fileName):    #Adds a new commit.
     CREATE (c)-[at:Applied_too]->(f) \
     RETURN c ")
 
-#CREATE (c)<-[ct:Committed_too]-(a) 
-#CREATE (d)-[cd:Commit_date]->(c) \
-#CREATE (c)-[po:Part_of]->(p) \
-#CREATE (c)-[at:Applied_too]->(f) \
-#RETURN c ")
     print("Query complete")
 
     if query.one == None:
@@ -117,8 +112,7 @@ def addDate(date):
     
 
 print("Input the location of the Git repo\n")
-#repoPath = input()
-repoPath = "/home/samathy/LINUX/linux/"
+repoPath = input()
 
 num = 0
 tree = []
@@ -138,8 +132,7 @@ for items in tree:
         fileList.append((str(items[0])+"/"+str(files),items[0], files))
 print("Please input the subdirectory. Use a \" . \" for this directory")
 print("[DIR]/[DIR]/[DIR]\n")
-#subdir = input()
-subdir = 'fs/ext4'
+subdir = input()
 print("Please enter the product.")
 product = input()
 print("Please enter the componant.")
@@ -152,7 +145,7 @@ for file in fileList:   #for everyfile in the files we want to analyse
         continue                #Skip it
     print("Gathering commits from file: "+file[0])
     commitData.append(list(file))     #Append a list with the first elemet the file tuple (name)
-    commitData[-1].append(list(repo.iter_commits('master',file[0], max_count=1 )))  #And the next element is  list of commits on that file
+    commitData[-1].append(list(repo.iter_commits('master',file[0])))  #And the next element is  list of commits on that file
 
 print("Making connection to Neo4J....")
 
