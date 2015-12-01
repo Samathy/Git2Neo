@@ -109,6 +109,21 @@ def addDate(date):
     query = graph.cypher.execute("CREATE (d:Date{date: '"+str(date)+"'})RETURN d")
     return 
 
+rc = open("git2neorc",'r')
+
+rcLines = rc.readlines()
+
+lineCount = 0
+for line in rcLines:
+
+    if line == "ConnectionString"
+        connectionString = rcLines[lineCount+1]
+    lineCount += 1
+
+
+rc.close()
+
+
     
 
 print("Input the location of the Git repo\n")
@@ -135,7 +150,7 @@ print("[DIR]/[DIR]/[DIR]\n")
 subdir = input()
 print("Please enter the product.")
 product = input()
-print("Please enter the componant.")
+print("Please enter the componant. A componant will be below the Product as a whole. A Product will have manny componants.\n Leave blank for no componant.")
 componant = input()
 repo = Repo(repoPath)
 
@@ -148,8 +163,12 @@ for file in fileList:   #for everyfile in the files we want to analyse
     commitData[-1].append(list(repo.iter_commits('master',file[0])))  #And the next element is  list of commits on that file
 
 print("Making connection to Neo4J....")
+print("Connecting with connection string: "+connectionString+"\n")
 
-graph = Graph("http://neo4j:BigData@localhost:7474/db/data")
+try:
+    graph = Graph(connectionString)
+except:
+    print("Could not connect to Neo4J database")
 
 if checkProduct(product) == False:
    addProduct(product)
