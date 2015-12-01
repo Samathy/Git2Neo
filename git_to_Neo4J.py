@@ -116,7 +116,7 @@ rcLines = rc.readlines()
 lineCount = 0
 for line in rcLines:
 
-    if line == "ConnectionString"
+    if line == "ConnectionString":
         connectionString = rcLines[lineCount+1]
     lineCount += 1
 
