@@ -118,6 +118,8 @@ for line in rcLines:
 
     if line == "ConnectionString":
         connectionString = rcLines[lineCount+1]
+    if line == "maxCommits":
+        maxCommits = int(rcLines[linecount+1]
     lineCount += 1
 
 
@@ -160,7 +162,7 @@ for file in fileList:   #for everyfile in the files we want to analyse
         continue                #Skip it
     print("Gathering commits from file: "+file[0])
     commitData.append(list(file))     #Append a list with the first elemet the file tuple (name)
-    commitData[-1].append(list(repo.iter_commits('master',file[0])))  #And the next element is  list of commits on that file
+    commitData[-1].append(list(repo.iter_commits('master',file[0],max_count=maxCommits)))  #And the next element is  list of commits on that file
 
 print("Making connection to Neo4J....")
 print("Connecting with connection string: "+connectionString+"\n")
