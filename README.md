@@ -19,6 +19,7 @@ Python script for grabbing all commits from a git repo and adding them to a Neo4
     - [ ] Date node contains time stamp and month day year
     - [ ] Commit contains all possible commit data.
     - [ ] Author nodes contain email addresses and all possible data.
+- [ ] Write some tests!
 
 
 
