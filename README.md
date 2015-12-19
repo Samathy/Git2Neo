@@ -9,7 +9,7 @@ Python script for grabbing all commits from a git repo and adding them to a Neo4
 
 ##TODO
 
-- [ ] Remove Linux kernel specific stuff (Mostly nodes specific to linux kernel source tree)
+- [x] Remove Linux kernel specific stuff (Mostly nodes specific to linux kernel source tree)
 - [ ] Add configuration file options to configure what nodes are created for different data in Git repo. (Lamda functions for add/checkNodeName?)
     
 - [x] Add option to configure how many commits to retrieve
