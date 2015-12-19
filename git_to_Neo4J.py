@@ -1,4 +1,3 @@
-from subprocess import Popen, PIPE
 from os import listdir, walk, chdir
 from git import Repo
 from py2neo import Graph
@@ -7,8 +6,32 @@ import time
 
 
 
+
+def generateMatch (node,field,string): #Generates a match query based on the three inputs.
+    query = "MATCH ("+node+"("+field+":'"+string+"')) RETURN("+node+")"
+    return query
+
+def generateAdd(node,fields):   #Generates add query for specified node. Cannot create complex querys for the commits.
+    query = "CREATE (x:"+node+"("
+    for item in fields:
+        query = query+item[0]+": '"+item[1]+"', "
+    query = query+") RETURN x)"
+
+    return query
+
+
 def strip_punctuation(string):
     return ''.join(c for c in string if c not in punctuation)
+
+def checkForNode(queryIn):        #Runs a match query on the speficied parameters
+    print(queryIn)
+    query = graph.cypher.execute(queryIn)
+    if query.one == None:
+        return False
+    else:
+        return True
+    return
+    
 
 def checkAuthor(name):  #Checks if the author already exists in the database.
     name = strip_punctuation(name) #Should remove all special chars
@@ -90,11 +113,11 @@ def addCommit(commit, fileName):    #Adds a new commit.
 def addAuthor(name):            #Adds a new author..
     print("Adding Author: "+name)
     name = strip_punctuation(name) #Should remove all special chars
-    query = graph.cypher.execute("CREATE (p:Person{name: '"+str(name)+"'}) RETURN p")
+    query = graph.cypher.execute(generateAdd("Person",[("name",str(name))]))
     return
 
 def  addProduct(projName):      #Adds new Project
-    query = graph.cypher.execute("CREATE (p:Product{name:'"+projName+"'}) RETURN p")
+    query = graph.cypher.execute(generateAdd("Product",[("name",str(projName))]))
     return
 
 def addComponant(comName):      #Adds new conponant and links to the project its part of.
@@ -106,99 +129,102 @@ def addFile(filename):
     return 
 
 def addDate(date):
-    query = graph.cypher.execute("CREATE (d:Date{date: '"+str(date)+"'})RETURN d")
+    query = graph.cypher.execute(generateAdd("Date",[("date",str(date))]))
     return 
 
-rc = open("git2neorc",'r')
 
-rcLines = rc.readlines()
+if __name__ == "__main__":
 
-lineCount = 0
+    rc = open("git2neorc",'r')
 
+    rcLines = rc.readlines()
 
-product = ""
-componant = ""
-
-for line in rcLines:
-
-    if line == "ConnectionString":
-        connectionString = rcLines[lineCount+1]
-    if line == "maxCommits":
-        maxCommits = int(rcLines[linecount+1]
-    if line == "Product":
-        product == line
-    if line == "Componant":
-        componant == line
-    lineCount += 1
+    lineCount = 0
 
 
-rc.close()
+    product = ""
+    componant = ""
+
+    for line in rcLines:
+
+        if line == "ConnectionString":
+            connectionString = rcLines[lineCount+1]
+        elif line == "maxCommits":
+            maxCommits = int(rcLines[lineCount+1])
+        elif line == "Product":
+            product = line
+        elif line == "Componant":
+            componant == line
+        lineCount += 1
 
 
-    
-
-print("Input the location of the Git repo\n")
-repoPath = input()
-
-num = 0
-tree = []
-fileList = []
-
-chdir(repoPath)
-
-for root, dirs, files in walk(repoPath):
-    num = num + 1
-    files = [f for f in files if not f[0] == '.']
-    dirs[:] = [d for d in dirs if not d[0] == '.']
-    tree.append((root,dirs,files))
+    rc.close()
 
 
-for items in tree:
-    for files in items[2]:
-        fileList.append((str(items[0])+"/"+str(files),items[0], files))
-print("Please input the subdirectory. Use a \" . \" for this directory")
-print("[DIR]/[DIR]/[DIR]\n")
-subdir = input()
-repo = Repo(repoPath)
+        
 
-commitData = list() #   store the commit data.
-for file in fileList:   #for everyfile in the files we want to analyse
-    if subdir not in file[1]:   #If the file is not in the directory we want to look at
-        continue                #Skip it
-    print("Gathering commits from file: "+file[0])
-    commitData.append(list(file))     #Append a list with the first elemet the file tuple (name)
-    commitData[-1].append(list(repo.iter_commits('master',file[0],max_count=maxCommits)))  #And the next element is  list of commits on that file
+    print("Input the location of the Git repo\n")
+    repoPath = input()
 
-print("Making connection to Neo4J....")
-print("Connecting with connection string: "+connectionString+"\n")
+    num = 0
+    tree = []
+    fileList = []
 
-try:
-    graph = Graph(connectionString)
-except:
-    print("Could not connect to Neo4J database")
+    chdir(repoPath)
 
-if product != "":
-    if checkProduct(product) == False:
-       addProduct(product)
-
-if componant != "":
-    if checkComponant(componant) == False:
-       addComponant(componant)
+    for root, dirs, files in walk(repoPath):
+        num = num + 1
+        files = [f for f in files if not f[0] == '.']
+        dirs[:] = [d for d in dirs if not d[0] == '.']
+        tree.append((root,dirs,files))
 
 
+    for items in tree:
+        for files in items[2]:
+            fileList.append((str(items[0])+"/"+str(files),items[0], files))
+    print("Please input the subdirectory. Use a \" . \" for this directory")
+    print("[DIR]/[DIR]/[DIR]\n")
+    subdir = input()
+    repo = Repo(repoPath)
+
+    commitData = list() #   store the commit data.
+    for file in fileList:   #for everyfile in the files we want to analyse
+        if subdir not in file[1]:   #If the file is not in the directory we want to look at
+            continue                #Skip it
+        print("Gathering commits from file: "+file[0])
+        commitData.append(list(file))     #Append a list with the first elemet the file tuple (name)
+        commitData[-1].append(list(repo.iter_commits('master',file[0],max_count=maxCommits)))  #And the next element is  list of commits on that file
+
+    print("Making connection to Neo4J....")
+    print("Connecting with connection string: "+connectionString+"\n")
+
+    try:
+        graph = Graph(connectionString)
+    except:
+        print("Could not connect to Neo4J database")
+
+    if product != "":
+        if checkProduct(product) == False:
+           addProduct(product)
+
+    if componant != "":
+        if checkComponant(componant) == False:
+           addComponant(componant)
 
 
 
-for file in commitData:   #for every commit
 
-    print(file)
-    
-    if checkFile(subdir+"/"+file[2]) == True:   #If file node exists
-        for commit in file[3]:        #For every commit on this file
-            print(commit.hexsha)
-            addCommit(commit, subdir+"/"+file[2])  #Add that commit
-    else:
-        addFile(subdir+"/"+file[2])            #Add that file (Since it doesnt exist)
-        for commit in file[3]:        #For every commit on this file
-            addCommit(commit, subdir+"/"+file[2])  #Add that commit
+
+    for file in commitData:   #for every commit
+
+        print(file)
+        
+        if checkFile(subdir+"/"+file[2]) == True:   #If file node exists
+            for commit in file[3]:        #For every commit on this file
+                print(commit.hexsha)
+                addCommit(commit, subdir+"/"+file[2])  #Add that commit
+        else:
+            addFile(subdir+"/"+file[2])            #Add that file (Since it doesnt exist)
+            for commit in file[3]:        #For every commit on this file
+                addCommit(commit, subdir+"/"+file[2])  #Add that commit
 
