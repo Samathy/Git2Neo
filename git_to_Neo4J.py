@@ -114,12 +114,21 @@ rc = open("git2neorc",'r')
 rcLines = rc.readlines()
 
 lineCount = 0
+
+
+product = ""
+componant = ""
+
 for line in rcLines:
 
     if line == "ConnectionString":
         connectionString = rcLines[lineCount+1]
     if line == "maxCommits":
         maxCommits = int(rcLines[linecount+1]
+    if line == "Product":
+        product == line
+    if line == "Componant":
+        componant == line
     lineCount += 1
 
 
@@ -150,10 +159,6 @@ for items in tree:
 print("Please input the subdirectory. Use a \" . \" for this directory")
 print("[DIR]/[DIR]/[DIR]\n")
 subdir = input()
-print("Please enter the product.")
-product = input()
-print("Please enter the componant. A componant will be below the Product as a whole. A Product will have manny componants.\n Leave blank for no componant.")
-componant = input()
 repo = Repo(repoPath)
 
 commitData = list() #   store the commit data.
@@ -172,11 +177,13 @@ try:
 except:
     print("Could not connect to Neo4J database")
 
-if checkProduct(product) == False:
-   addProduct(product)
+if product != "":
+    if checkProduct(product) == False:
+       addProduct(product)
 
-if checkComponant(componant) == False:
-   addComponant(componant)
+if componant != "":
+    if checkComponant(componant) == False:
+       addComponant(componant)
 
 
 
