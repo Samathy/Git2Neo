@@ -8,7 +8,7 @@ import time
 
 
 def generateMatch (node,field,string): #Generates a match query based on the three inputs.
-    query = "MATCH ("+node+"("+field+":'"+string+"')) RETURN("+node+")"
+    query = "MATCH ("+node+"("+field+":'"+string+"')) RETURN ("+node+")"
     return query
 
 def generateAdd(node,fields):   #Generates add query for specified node. Cannot create complex querys for the commits.
@@ -23,7 +23,7 @@ def generateAdd(node,fields):   #Generates add query for specified node. Cannot 
 def strip_punctuation(string):
     return ''.join(c for c in string if c not in punctuation)
 
-def checkForNode(queryIn):        #Runs a match query on the speficied parameters
+def checkForNode(queryIn):        #Runs a match query on the speficied parameters. 
     print(queryIn)
     query = graph.cypher.execute(queryIn)
     if query.one == None:
