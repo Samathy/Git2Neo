@@ -12,10 +12,10 @@ def generateMatch (node,field,string): #Generates a match query based on the thr
     return query
 
 def generateAdd(node,fields):   #Generates add query for specified node. Cannot create complex querys for the commits.
-    query = "CREATE (x:"+node+"("
+    query = "CREATE (x: "+node+"("
     for item in fields:
         query = query+item[0]+": '"+item[1]+"', "
-    query = query+") RETURN x)"
+    query = query+")) RETURN (x)"
 
     return query
 
