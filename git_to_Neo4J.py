@@ -144,6 +144,8 @@ if __name__ == "__main__":
 
     product = ""
     componant = ""
+    repoPath = ""
+    connectionString = ""
 
     for line in rcLines:
 
@@ -158,10 +160,14 @@ if __name__ == "__main__":
         elif line == "repoPath":
             repoPath == rclines[lineCount+1]
         lineCount += 1
-        
 
 
     rc.close()
+
+    if (connectinoString == "") or (repoPath == ""):
+        print("RC Input Error: Couldent find connection strig and/or repoPath strings in RC file. \n Aborting")
+        quit()
+
 
     num = 0
     tree = []
