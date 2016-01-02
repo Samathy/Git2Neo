@@ -155,16 +155,13 @@ if __name__ == "__main__":
             product = line
         elif line == "Componant":
             componant == line
+        elif line == "repoPath":
+            repoPath == rclines[lineCount+1]
         lineCount += 1
+        
 
 
     rc.close()
-
-
-        
-
-    print("Input the location of the Git repo\n")
-    repoPath = input()
 
     num = 0
     tree = []
