@@ -1,0 +1,6 @@
+connectionString
+http://neo4j:BigData@localhost:7474/db/data/
+repoPath
+/home/EXAMPLE/EXAMPLEREP/
+subdirectory
+sub/dir/path
