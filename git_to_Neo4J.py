@@ -133,7 +133,8 @@ def addDate(date):
     return 
 
 
-if __name__ == "__main__":
+
+def main():
 
     rc = open("git2neorc",'r')
 
@@ -231,3 +232,7 @@ if __name__ == "__main__":
             for commit in file[3]:        #For every commit on this file
                 addCommit(commit, subdir+"/"+file[2])  #Add that commit
 
+
+
+if __name__ == "__main__":
+    main()
