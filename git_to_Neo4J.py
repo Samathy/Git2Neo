@@ -146,6 +146,7 @@ if __name__ == "__main__":
     componant = ""
     repoPath = ""
     connectionString = ""
+    subDir = ""
 
     for line in rcLines:
 
@@ -159,13 +160,15 @@ if __name__ == "__main__":
             componant == line
         elif line == "repoPath":
             repoPath == rclines[lineCount+1]
+        elif line == "subdirectory":
+            subdirectory = rclines[lineCount+1]
         lineCount += 1
 
 
     rc.close()
 
     if (connectinoString == "") or (repoPath == ""):
-        print("RC Input Error: Couldent find connection strig and/or repoPath strings in RC file. \n Aborting")
+        print("RC Input Error: Couldent find connection strig and/or repo Path strings in RC file. \n Aborting")
         quit()
 
 
@@ -185,9 +188,6 @@ if __name__ == "__main__":
     for items in tree:
         for files in items[2]:
             fileList.append((str(items[0])+"/"+str(files),items[0], files))
-    print("Please input the subdirectory. Use a \" . \" for this directory")
-    print("[DIR]/[DIR]/[DIR]\n")
-    subdir = input()
     repo = Repo(repoPath)
 
     commitData = list() #   store the commit data.
